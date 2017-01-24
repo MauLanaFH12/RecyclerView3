@@ -6,24 +6,25 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 
 import id.sch.smktelkom_mlg.learn.recyclerview3.adapter.HotelAdapter;
 import id.sch.smktelkom_mlg.learn.recyclerview3.model.Hotel;
 
-public class MainActivity extends AppCompatActivity implements  HotelAdapter.IHotelAdapter
-{
+public class MainActivity extends AppCompatActivity implements HotelAdapter.IHotelAdapter {
+
 
     public static final String HOTEL = "hotel";
+    public static final int REQUEST_CODE_ADD = 88;
+
     ArrayList<Hotel> mList = new ArrayList<>();
     HotelAdapter mAdapter;
 
@@ -37,10 +38,10 @@ public class MainActivity extends AppCompatActivity implements  HotelAdapter.IHo
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v) {
+                goAdd();
             }
+
         });
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -52,9 +53,7 @@ public class MainActivity extends AppCompatActivity implements  HotelAdapter.IHo
         fillData();
     }
 
-    private void fillData()
-    {
-
+    private void fillData() {
         Resources resources = getResources();
         String[] arJudul = resources.getStringArray(R.array.places);
         String[] arDeskripsi = resources.getStringArray(R.array.place_desc);
@@ -78,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements  HotelAdapter.IHo
         mAdapter.notifyDataSetChanged();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -97,15 +95,13 @@ public class MainActivity extends AppCompatActivity implements  HotelAdapter.IHo
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void doClick(int pos)
-    {
+    public void doClick(int pos) {
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(HOTEL,mList.get(pos));
+        intent.putExtra(HOTEL, mList.get(pos));
         startActivity(intent);
     }
 
@@ -127,5 +123,19 @@ public class MainActivity extends AppCompatActivity implements  HotelAdapter.IHo
     @Override
     public void doShare(int pos) {
 
+    }
+
+    private void goAdd() {
+        startActivityForResult(new Intent(this, InputActivity.class), REQUEST_CODE_ADD);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == REQUEST_CODE_ADD && resultCode == RESULT_OK) {
+            Hotel hotel = (Hotel) data.getSerializableExtra(HOTEL);
+            mList.add(hotel);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 }
